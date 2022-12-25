@@ -9,8 +9,7 @@ function getRandomHexColor() {
   };
   refs.stopBtn.disabled = true;
   refs.startBtn.addEventListener('click', () => {
-    refs.startBtn.disabled = true;
-    refs.stopBtn.disabled = false;
+     btnAccessibility()
     colorId = setInterval(() => {
       const color = getRandomHexColor();
       refs.body.style.backgroundColor = `${color}`;
@@ -18,8 +17,13 @@ function getRandomHexColor() {
   });
   
   refs.stopBtn.addEventListener('click', () => {
-    console.log('hfjbvgzdf');
-    refs.startBtn.disabled = false;
+    
+    btnAccessibility()
     clearInterval(colorId);
-    refs.stopBtn.disabled = true;
+    
   });
+
+  function btnAccessibility(){
+    refs.startBtn.disabled = false;
+    refs.stopBtn.disabled = true;
+  }
