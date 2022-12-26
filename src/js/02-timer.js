@@ -24,122 +24,81 @@ const options = {
   defaultDate: new Date(),
   minuteIncrement: 1,
   onClose(selectedDates) {
-   
-    console.log(selectedDates[0]);
-    const chosenDate = new Date(selectedDates[0]);
-    
-    const utcChosenDate = chosenDate.getTime();
-    const currentTime = Date.now();
-    const deltaTime = utcChosenDate - currentTime;
-    // console.log(utcChosenDate);
+      chosenDateMs = selectedDates[0].getTime();
 
-    timerOn(chosenDate);
-    // timeStop(deltaTime);
-    
-    if (selectedDates[0] < new Date()) {
-      console.log(new Date())
-
-      Notify.failure('Please choose a date in the future');
+     if(chosenDateMs < new Date()){
+      Notify.failure('Please choose a date in the future.')
       return;
-    } 
-   
-   
-  
+     }
 
-    refs.startBtn.removeAttribute('disabled', 'disabled');
-    
-   const timer = {
+   refs.startBtn.disabled = false;
 
-    intervalId: null,
-    isActive: false,
-
-     start() {
-
-      if (this.isActive) {
-        return;
-      }
-
-      this.isActive = true;
-   
-      this.intervalId = setInterval(() => {
-       const currentTime = Date.now();
-       
-        const deltaTime = utcChosenDate - currentTime;
-        // console.log(deltaTime);
-        const { days, hours, minutes, seconds } = convertMs(deltaTime);
-       const time = convertMs(deltaTime);
-
-      function  updateClockface ({days, hours, minutes, seconds}) {
-        refs.dayValue.textContent = `${days}`;
-        refs.hoursValue.textContent = `${hours}`;
-        refs.minutesValue.textContent = `${minutes}`;
-        refs.secondsValue.textContent = `${seconds}`;
-      }
-
-      updateClockface(time);
-  
-        console.log(`${days}:${hours}:${minutes}:${seconds}`);
-     }, 1000)
-     
-   },
-
-   stop(){
-    clearInterval(this.intervalId);
-    this.isActive = false;
-    const time = this.convertMs(0);
-   }
-
-   
-
-   
- }
-  
-// function timeStop(deltaTime) {
-//   if (deltaTime < 1000) {
-//     timer.stop();
-    
-//   }
-
-
-
-   function timerOn (chosenDate) {
-    const currentTime = Date.now();
-    refs.startBtn.addEventListener('click', () => {
-       timer.start();
-     });
-   }
-}
+  }
 };
+
+
 
 flatpickr('#datetime-picker', options);
 
 
+let object = {};
 
-
-
-
-
-
-
-
-function convertMs(ms) {
-  // Number of milliseconds per unit of time
-  const second = 1000;
-  const minute = second * 60;
-  const hour = minute * 60;
-  const day = hour * 24;
-
-  // Remaining days
-  const days = addLeadingZero(Math.floor(ms / day));
-  // Remaining hours
-  const hours = addLeadingZero(Math.floor((ms % day) / hour));
-  // Remaining minutes
-  const minutes = addLeadingZero(Math.floor(((ms % day) % hour) / minute));
-  // Remaining seconds
-  const seconds = addLeadingZero(Math.floor((((ms % day) % hour) % minute) / second));
-
-  return { days, hours, minutes, seconds };
+const timerOn = () => {
+  intervalId = setInterval(() => {
+    
+    const deltaTime = chosenDateMs - new Date().getTime();
+    if (deltaTime < 0 ){
+      clearTimeout(intervalId);
+      Notify.failure('You ran out oof time!')
+      return;
+    };
+    object = convertMs(deltaTime)
+    updateClockFace(object);
+  },1000)
 }
+
+
+
+  
+
+   
+
+   
+
+     function convertMs(ms) {
+      // Number of milliseconds per unit of time
+      const second = 1000;
+      const minute = second * 60;
+      const hour = minute * 60;
+      const day = hour * 24;
+    
+      // Remaining days
+      const days = addLeadingZero(Math.floor(ms / day));
+      // Remaining hours
+      const hours = addLeadingZero(Math.floor((ms % day) / hour));
+      // Remaining minutes
+      const minutes = addLeadingZero(Math.floor(((ms % day) % hour) / minute));
+      // Remaining seconds
+      const seconds = addLeadingZero(Math.floor((((ms % day) % hour) % minute) / second));
+    
+      return { days, hours, minutes, seconds };
+    }
+    
+   
+
+ 
+   
+   function updateClockFace({ days, hours, minutes, seconds }) {
+    refs.dayValue.textContent = `${days}`;
+    refs.hoursValue.textContent = `${hours}`;
+    refs.minutesValue.textContent = `${minutes}`;
+    refs.secondsValue.textContent = `${seconds}`;
+  }
+
+
+
+
+
 
  function addLeadingZero(value) {
   return String(value).padStart( 2, '0');
@@ -148,3 +107,4 @@ function convertMs(ms) {
 
 
 
+refs.startBtn.addEventListener('click', timerOn);
