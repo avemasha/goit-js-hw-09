@@ -24,7 +24,7 @@ const options = {
   defaultDate: new Date(),
   minuteIncrement: 1,
   onClose(selectedDates) {
-      chosenDateMs = selectedDates[0].getTime();
+    const chosenDateMs = selectedDates[0].getTime();
 
      if(chosenDateMs < new Date()){
       Notify.failure('Please choose a date in the future.')
@@ -32,7 +32,7 @@ const options = {
      }
 
    refs.startBtn.disabled = false;
-
+   refs.startBtn.addEventListener('click', timerOn(chosenDateMs));
   }
 };
 
@@ -43,10 +43,10 @@ flatpickr('#datetime-picker', options);
 
 let object = {};
 
-const timerOn = () => {
+function timerOn (chosenDateMs) {
   intervalId = setInterval(() => {
     
-    const deltaTime = chosenDateMs - new Date().getTime();
+    const deltaTime = chosenDateMs - Date.now();
     if (deltaTime < 0 ){
       clearTimeout(intervalId);
       Notify.failure('You ran out oof time!')
@@ -107,4 +107,3 @@ const timerOn = () => {
 
 
 
-refs.startBtn.addEventListener('click', timerOn);
